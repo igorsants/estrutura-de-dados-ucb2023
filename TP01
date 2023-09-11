@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Estrutura para armazenar os dados de um aluno
+typedef struct {
+    char nome[50];
+    char telefone[20];
+    char curso[50];
+    float nota1;
+    float nota2;
+    float media;
+    char situacao[15];
+} Aluno;
+
+// Função para calcular a média das notas de um aluno
+void calcularMedia(Aluno *aluno) {
+    aluno->media = (aluno->nota1 + aluno->nota2) / 2.0;
+    if (aluno->media >= 7.0) {
+        strcpy(aluno->situacao, "APROVADO");
+    } else {
+        strcpy(aluno->situacao, "REPROVADO");
+    }
+}
+
+int main() {
+    FILE *entrada = fopen("DadosEntrada.csv", "r");
+    FILE *saida = fopen("SituacaoFinal.csv", "w");
+
+    if (entrada == NULL || saida == NULL) {
+        perror("Erro ao abrir os arquivos.");
+        return 1;
+    }
+
+    // Ler o cabeçalho do arquivo de entrada
+    char cabecalho[256];
+    fgets(cabecalho, sizeof(cabecalho), entrada);
+
+    // Escrever o cabeçalho no arquivo de saída
+    fprintf(saida, "Nome,Media,Situacao\n");
+
+    // Ler e processar os dados dos alunos
+    Aluno aluno;
+    while (fscanf(entrada, "%49[^,],%19[^,],%49[^,],%f,%f\n",
+                  aluno.nome, aluno.telefone, aluno.curso, &aluno.nota1, &aluno.nota2) == 5) {
+        calcularMedia(&aluno);
+        fprintf(saida, "%s,%.2f,%s\n", aluno.nome, aluno.media, aluno.situacao);
+    }
+
+    fclose(entrada);
+    fclose(saida);
+
+    printf("Processamento concluído. Os resultados foram salvos em SituacaoFinal.csv.\n");
+
+    return 0;
+}
