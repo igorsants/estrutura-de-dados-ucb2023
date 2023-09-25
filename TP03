@@ -1,0 +1,52 @@
+#include <stdio.h>
+
+typedef struct {
+    float X;
+    float Y;
+} Ponto;
+
+float calcularArea(Ponto pontos[], int numVertices) {
+    float area = 0.0;
+    int i, j;
+
+    for (i = 0; i < numVertices; i++) {
+        j = (i + 1) % numVertices;
+        area += (pontos[i].X * pontos[j].Y) - (pontos[j].X * pontos[i].Y);
+    }
+
+    area = area / 2.0;
+
+    return (area < 0 ? -area : area);
+}
+
+int main() {
+    FILE *arquivo;
+    int numVertices, i;
+
+    // Abre o arquivo de entrada
+    arquivo = fopen("vertices.txt", "r");
+
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de entrada.\n");
+        return 1;
+    }
+
+    // Lê o número de vértices
+    fscanf(arquivo, "%d", &numVertices);
+
+    Ponto pontos[numVertices];
+
+    // Lê as coordenadas dos vértices
+    for (i = 0; i < numVertices; i++) {
+        fscanf(arquivo, "%f %f", &pontos[i].X, &pontos[i].Y);
+    }
+
+    fclose(arquivo);
+
+    // Calcula a área do polígono
+    float area = calcularArea(pontos, numVertices);
+
+    printf("A area do poligono e %.2f\n", area);
+
+    return 0;
+}
